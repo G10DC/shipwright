@@ -1,3 +1,3 @@
-# shipwright - Automated Repository Initialization & Zero-Trace GitHub Publishing
+# Shipwright
 
-`shipwright` is an automated tool designed for seamless repository initialization and zero-trace GitHub publishing. It streamlines workspace setup, configuration, and release automation.
+Automated repository initialization, pre-publish safety checks, clean conventional commits, and publishing.

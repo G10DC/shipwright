@@ -1,4 +1,34 @@
+# Dependencies
 node_modules/
-__pycache__/
+.pnpm-store/
+package-lock.json
+
+# Build & Output
+dist/
+build/
+out/
+*.tgz
+*.tar.gz
+
+# Environment & Local Configuration
+.env
+.env.local
+.env.*.local
+*.local
+
+# Logs & Cache
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.eslintcache
+.ast-cache.json
+.trellis/
+
+# OS & IDE Metadata
 .DS_Store
 Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo

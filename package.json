@@ -6,7 +6,7 @@
   "license": "MIT",
   "main": "lib/shipwright.js",
   "scripts": {
-    "test": "node --test \"tests/**/*.test.js\"",
+    "test": "node --test tests/*.test.js",
     "lint": "eslint lib tests"
   },
   "dependencies": {},

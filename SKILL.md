@@ -1,6 +1,12 @@
 ---
 name: shipwright
-description: Automated repository initialization, safety checks, clean conventional commits, and zero-trace GitHub publishing.
+description: >-
+  Automated repository initialization, safety checks, clean conventional
+  commits, and zero-trace GitHub publishing. Validates that no secrets, build
+  artifacts, or OS metadata leak into the published repository. Use when setting
+  up a new repo or publishing to GitHub for the first time. Never use for
+  ongoing CI/CD -- use a proper pipeline; never skip the pre-publish safety
+  scan.
 ---
 
 # 🛠️ shipwright Skill Specification

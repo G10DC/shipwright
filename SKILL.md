@@ -9,11 +9,11 @@ description: >-
   scan.
 ---
 
-# 🛠️ shipwright Skill Specification
+# ️ shipwright Skill Specification
 
 Provides commands, helpers, and workflow gates to manage GitHub repositories, enforce conventional commit messaging, perform pre-push privacy and security checks, and generate initial project boilerplate files.
 
-## 🎯 Usage Guidelines
+## Usage Guidelines
 
 Activate this skill when:
 - Creating a new project, workspace, or module.
@@ -24,7 +24,7 @@ Activate this skill when:
 
 ---
 
-## 🚀 Core Workflows
+## Core Workflows
 
 ### 1. Repository Setup & Boilerplate
 Automatically creates the following files:
@@ -48,9 +48,19 @@ Validates all commit messages against conventional prefixes:
 
 ---
 
-## ⚡ Spark Breakthrough Enhancement
+## Spark Breakthrough Enhancement
 
 - **Feature**: **Zero-Trace One-Click GitHub Publisher**
 - **Description**: Automates clean conventional commits & pre-push privacy scans.
 - **Synergy**: Integrated with `mirror` (code review) & `lookout` (security audit).
 - **Framework**: Applied via the `spark` 4-Lens Lateral Ideation Engine.
+
+
+## When to use
+
+- Primary domain workflow execution as specified in frontmatter description.
+
+
+## When NOT to use
+
+- Tasks outside declared skill scope or handled by specialized sibling skills.

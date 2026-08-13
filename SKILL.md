@@ -1,5 +1,6 @@
 ---
 name: shipwright
+status: implemented
 description: >-
   Automated repository initialization, safety checks, clean conventional
   commits, and zero-trace GitHub publishing. Validates that no secrets, build
@@ -45,22 +46,14 @@ Validates all commit messages against conventional prefixes:
 
 *Zero-Trace Rule*: Commit histories and comments must not contain any reference to AI assistant generation. All comments and commit messages must remain short, professional, and technical.
 
-
----
-
-## Spark Breakthrough Enhancement
-
-- **Feature**: **Zero-Trace One-Click GitHub Publisher**
-- **Description**: Automates clean conventional commits & pre-push privacy scans.
-- **Synergy**: Integrated with `mirror` (code review) & `lookout` (security audit).
-- **Framework**: Applied via the `spark` 4-Lens Lateral Ideation Engine.
-
-
 ## When to use
 
-- Primary domain workflow execution as specified in frontmatter description.
-
+- Initializing a new repo (boilerplate files), or publishing to GitHub for the first time via the
+  `gh` CLI, with a pre-publish scan for secrets/keys/PII in tracked files.
+- Enforcing Conventional Commit messages on a commit-and-push step.
 
 ## When NOT to use
 
-- Tasks outside declared skill scope or handled by specialized sibling skills.
+- **Ongoing CI/CD** — this is a one-time setup/publish tool, not a pipeline; use a proper CI system.
+- **Skipping the pre-publish safety scan** — always run it before a first push; it's the one check
+  standing between a workspace `.env` file and a public repo.

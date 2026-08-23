@@ -120,3 +120,26 @@ test('commitAndPush commits files and detects active branch', () => {
 
   fs.rmSync(TEST_DIR, { recursive: true, force: true });
 });
+
+// --- regression: scope casing --------------------------------------------
+//
+// The scope pattern was [a-z0-9-]+ with no case-insensitive flag, so every
+// uppercase ticket identifier was rejected: feat(T-001), fix(JIRA-42). Callers
+// pairing a commit with its work item had to drop either the scope or the
+// convention. Conventional Commits places no casing restriction on scopes, and
+// beacon -- the changelog generator downstream -- already parsed them
+// case-insensitively, so the two skills disagreed on what a valid commit was.
+
+test('accepts uppercase ticket identifiers as scopes', () => {
+  assert.equal(validateCommitMessage('feat(T-001): add upload validation'), true);
+  assert.equal(validateCommitMessage('fix(JIRA-42): correct the parser'), true);
+});
+
+test('accepts the breaking-change marker', () => {
+  assert.equal(validateCommitMessage('feat(api)!: drop v1 endpoints'), true);
+});
+
+test('still rejects messages without a conventional type', () => {
+  assert.equal(validateCommitMessage('T-001: add upload validation'), false);
+  assert.equal(validateCommitMessage('random text'), false);
+});

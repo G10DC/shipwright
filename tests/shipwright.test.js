@@ -1,9 +1,10 @@
 // tests/shipwright.test.js
 // Offline test suite for shipwright. Ensures all helpers and pipeline validations pass.
 
-import { test } from 'node:test';
+import { test, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { execSync } from 'node:child_process';
 import {
@@ -142,4 +143,62 @@ test('accepts the breaking-change marker', () => {
 test('still rejects messages without a conventional type', () => {
   assert.equal(validateCommitMessage('T-001: add upload validation'), false);
   assert.equal(validateCommitMessage('random text'), false);
+});
+
+// The description promises that "no secrets, build artifacts, or OS metadata leak into
+// the published repository". Each case below is one of those categories, and each one
+// used to pass the scan.
+describe('runSafetyCheck covers every category it promises', () => {
+  const build = (files, dirs = []) => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'shipwright-safety-'));
+    for (const d of dirs) fs.mkdirSync(path.join(dir, d), { recursive: true });
+    for (const [name, content] of Object.entries(files)) {
+      const full = path.join(dir, name);
+      fs.mkdirSync(path.dirname(full), { recursive: true });
+      fs.writeFileSync(full, content);
+    }
+    return dir;
+  };
+  const scan = (...args) => runSafetyCheck(build(...args)).join('\n');
+
+  it('flags OS metadata', () => {
+    assert.match(scan({ '.DS_Store': 'junk', 'Thumbs.db': 'junk' }), /OS metadata.*\.DS_Store/s);
+  });
+
+  // Skipping a build directory silently was the reason a scan promising build artefacts
+  // do not leak never mentioned the largest one in the tree.
+  it('flags a build artefact directory instead of silently skipping it', () => {
+    assert.match(scan({ 'index.js': '1' }, ['node_modules', 'dist']), /Build artefact.*node_modules/s);
+    assert.match(scan({ 'index.js': '1' }, ['node_modules', 'dist']), /Build artefact.*dist/s);
+  });
+
+  it('flags a private key with no helpful extension', () => {
+    assert.match(scan({ id_rsa: '-----BEGIN RSA PRIVATE KEY-----\nMIIE\n' }), /key file detected.*id_rsa/s);
+  });
+
+  it('flags a private key block inside an ordinary file', () => {
+    assert.match(scan({ 'notes.md': 'here it is:\n-----BEGIN OPENSSH PRIVATE KEY-----\n' }), /private key block/);
+  });
+
+  // JSON uses `:`, not `=`, which is most of the configuration in a repository.
+  it('flags a credential in JSON', () => {
+    const out = scan({ 'config.json': JSON.stringify({ apiKey: 'sk-proj-abc123DEF456ghi789JKL012mno345PQR678' }) });
+    assert.match(out, /config\.json/);
+  });
+
+  it('flags a credential value even when nothing names it helpfully', () => {
+    assert.match(scan({ 'a.js': 'const x = "ghp_ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";' }), /GitHub token/);
+  });
+
+  // A scan that cries wolf on the file you are meant to commit is a scan people learn to
+  // skip, and the description ends by saying never to skip it.
+  it('stays quiet on a repository that is safe to publish', () => {
+    const out = scan({
+      '.env.example': 'OPENAI_API_KEY=\nDB_PASSWORD=<your-password>\n',
+      'src/a.mjs': 'const token = process.env.TOKEN;\n',
+      'README.md': '# project\n\nSet your api key in .env before running.\n',
+      'index.mjs': 'export const run = () => 1;\n',
+    });
+    assert.strictEqual(out, '', `false positives:\n${out}`);
+  });
 });
